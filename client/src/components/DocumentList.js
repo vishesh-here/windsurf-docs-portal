@@ -57,6 +57,7 @@ const DocumentList = ({ token, isAdmin, onLogout }) => {
       setFullContent(response.data.content);
       setError('');
       setAccessAttempted(true);
+      fetchDocuments(); // Refresh the list after successful access
     } catch (err) {
       setError('Invalid access code');
       setAccessAttempted(true);
