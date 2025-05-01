@@ -9,12 +9,17 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 
-app.use(cors());
+app.use(cors({
+  origin: CORS_ORIGIN,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Initialize SQLite database
-const db = new sqlite3.Database('documents.db', (err) => {
+const db = new sqlite3.Database(process.env.DATABASE_URL || 'documents.db', (err) => {
   if (err) console.error('Database opening error: ', err);
   else console.log('Connected to SQLite database');
 });
@@ -127,6 +132,11 @@ app.post('/api/documents', authenticateToken, (req, res) => {
       res.json({ id: this.lastID });
     }
   );
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'healthy' });
 });
 
 app.listen(port, () => {
