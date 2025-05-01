@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Container,
   Grid,
@@ -32,19 +32,20 @@ const DocumentList = ({ token, isAdmin, onLogout }) => {
   const [error, setError] = useState('');
   const [accessAttempted, setAccessAttempted] = useState(false);
 
-  useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/api/documents`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setDocuments(response.data);
-      } catch (err) {
-        console.error('Failed to fetch documents:', err);
-      }
-    };
-    fetchDocuments();
+  const fetchDocuments = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/documents`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setDocuments(response.data);
+    } catch (err) {
+      console.error('Failed to fetch documents:', err);
+    }
   }, [token]);
+
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   const handleAccessSubmit = async () => {
     try {
